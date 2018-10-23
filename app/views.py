@@ -1,24 +1,26 @@
 from app import app
 from flask import render_template, session, request, make_response, redirect, url_for
 
+POLL = [
+    {'id': 1, 'name': 'Option 1'},
+    {'id': 2, 'name': 'Option 2'},
+    {'id': 3, 'name': 'Option 3'},
+]
+
 
 @app.route('/')
 @app.route('/index')
 def index():
-
     addrs = session.setdefault('addrs', [])
-    polls = session.setdefault('polls', 0)
+    voted = request.remote_addr in addrs
 
-    return render_template('index.html', polls=polls, addrs=addrs)
+    return render_template('index.html', addrs=addrs, voted=voted, poll=POLL)
 
 
-
-@app.route('/vote')
-def vote():
-
+@app.route('/vote/<id>')
+def vote(id):
     addrs = session.setdefault('addrs', [])
 
-    # if request.cookies.get('voted') == 'True':
     if request.remote_addr in addrs:
         return render_template('voted.html', voted=True)
 
@@ -30,19 +32,12 @@ def vote():
     addrs.append(request.remote_addr)
     session['addrs'] = addrs
 
-    resp = make_response(render_template('voted.html'))
-
-    resp.set_cookie('voted', 'True')
-
-    return resp
+    return make_response(render_template('voted.html'))
 
 
 @app.route('/pop')
 def pop():
-
     resp = make_response(redirect(url_for('index')))
-
-    resp.set_cookie('voted', 'False')
 
     addrs = session.setdefault('addrs', [])
     addrs.remove(request.remote_addr)

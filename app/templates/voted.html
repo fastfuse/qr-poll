@@ -1,9 +1,11 @@
+{% extends "base.html" %}
 
-{% if voted %}
-    <p>Already voted!</p>
+{% block content %}
 
-{% else %}
-<p>voted</p>
+    {% if voted %}
+      <p>Already voted!</p>
+    {% else %}
+      <p>Voted</p>
+    {% endif %}
 
-{% endif %}
-
+{% endblock content %}
